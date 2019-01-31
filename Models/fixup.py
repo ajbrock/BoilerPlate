@@ -62,8 +62,8 @@ class Network(nn.Module):
     self.conv1 = nn.Conv2d(3, nChannels[0], kernel_size=3, stride=1,
                            padding=1, bias=False)
     
-    # Layer index, must be 1-indexed
-    self.layer_index = 1
+    # Layer index, now only used to count resblocks
+    self.layer_index = 0
     # 1st block
     self.block1 = self._make_block(n, nChannels[0], nChannels[1], block, 1)
     # 2nd block
@@ -108,8 +108,8 @@ class Network(nn.Module):
       for b in block:
         # He init, rescaled by Fixup multiplier
         n = b.conv1.kernel_size[0] * b.conv1.kernel_size[1] * b.conv1.out_channels
-        print(b.layer_index, math.sqrt(2. / n), b.layer_index **(-0.5))
-        b.conv1.weight.data.normal_(0,(b.layer_index ** (-0.5)) *  math.sqrt(2. / n)) 
+        print(b.layer_index, math.sqrt(2. / n), self.layer_index **(-0.5))
+        b.conv1.weight.data.normal_(0,(self.layer_index ** (-0.5)) *  math.sqrt(2. / n)) 
         b.conv2.weight.data.zero_()
         if b.convShortcut is not None:
           n = b.convShortcut.kernel_size[0] * b.convShortcut.kernel_size[1] * b.convShortcut.out_channels
